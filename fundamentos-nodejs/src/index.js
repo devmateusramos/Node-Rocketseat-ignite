@@ -96,4 +96,50 @@ app.post("/withdraw", verifyIfExistsAccountCpf, (request, response) => {
   response.status(201).send();
 });
 
+app.get("/statement/date", verifyIfExistsAccountCpf, (request, response) => {
+  const { costumer } = request;
+  const { date } = request.query;
+
+  const dateFormat = new Date(date + " 00:00");
+
+  const statement = costumer.statement.filter(
+    (statement) =>
+      statement.created_at.toDateString() === dateFormat.toDateString()
+  );
+
+  return response.json(costumer.statement);
+});
+
+app.put("/account", verifyIfExistsAccountCpf, (request, response) => {
+  const { name } = request.body;
+  const { costumer } = request;
+
+  costumer.name = name;
+
+  response.status(201).send();
+});
+
+app.get("/accountCostumer", verifyIfExistsAccountCpf, (request, response) => {
+  const { costumer } = request;
+  console.log(costumer);
+
+  response.json(costumer);
+});
+
+app.delete("/account", verifyIfExistsAccountCpf, (request, response) => {
+  const { costumer } = request;
+
+  costumers.splice(costumer, 1);
+
+  return response.status(200).json(costumers);
+});
+
+app.get("/balance", (request, response) => {
+  const { costumer } = request;
+
+  const balance = getBalance(costumer.statement);
+
+  return response.json(balance);
+});
+
 app.listen(3333);
